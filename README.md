@@ -16,8 +16,13 @@ A simple real-time chat server written in Java using sockets and threads.
 javac Server.java
 javac Client.java
 
-- Start the server
+### 2. Start the server
+
+```bash
 java Server
 
-- Open a new terminal for each client
+### 3. Start the client (in a new terminal)
+
+```bash
 java Client
+
