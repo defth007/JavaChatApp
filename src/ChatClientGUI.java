@@ -1,7 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.*;
+import java.net.*;
 
 public class ChatClientGUI {
+    private static PrintWriter out;
+
     public static void main(String[] args) {
         // Create the main window
         JFrame frame = new JFrame("Chat Client");
@@ -30,5 +35,46 @@ public class ChatClientGUI {
 
         // Show window
         frame.setVisible(true);
+
+        try {
+            Socket socket = new Socket("localhost", 1234);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
+
+            // Thread to listen for messages from server
+            Thread readThread = new Thread(() -> {
+                try {
+                    String msgFromServer;
+                    while ((msgFromServer = in.readLine()) != null) {
+                        chatArea.append("Server: " + msgFromServer + "\n");
+                    }
+                } catch (IOException e) {
+                    chatArea.append("Connection closed.\n");
+                }
+            });
+            readThread.start();
+
+        } catch (IOException e) {
+            chatArea.append("Failed to connect to server: " + e.getMessage() + "\n");
+            sendButton.setEnabled(false);
+            inputField.setEnabled(false);
+        }
+
+        // Send message on button click or Enter key
+        Action sendAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String message = inputField.getText().trim();
+                if (!message.isEmpty()) {
+                    out.println(message);
+                    chatArea.append("You: " + message + "\n");
+                    inputField.setText("");
+                }
+            }
+        };
+
+        sendButton.addActionListener(sendAction);
+        inputField.addActionListener(sendAction); // allows hitting Enter to send
     }
 }
