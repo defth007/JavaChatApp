@@ -10,19 +10,20 @@ A simple real-time chat server written in Java using sockets and threads.
 
 ## How to Run
 
-### 1. Compile the Java files
+### 1. Compile the code
 
 ```bash
 javac Server.java
-javac Client.java
-
+javac ChatClientGUI.java
+```
 ### 2. Start the server
-
 ```bash
 java Server
+```
 
-### 3. Start the client (in a new terminal)
-
+### 3. Start the client(s)
 ```bash
-java Client
+java ChatClientGUI
+```
+Each GUI window represents a different user connected to the same server.
 
