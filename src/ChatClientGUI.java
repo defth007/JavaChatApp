@@ -16,6 +16,7 @@ public class ChatClientGUI {
         // Create UI components
         JTextArea chatArea = new JTextArea();
         chatArea.setEditable(false);
+        chatArea.setFont(new Font("SansSerif", Font.PLAIN, 14));
         JScrollPane scrollPane = new JScrollPane(chatArea);
 
         JTextField inputField = new JTextField();
@@ -36,8 +37,16 @@ public class ChatClientGUI {
         // Show window
         frame.setVisible(true);
 
+        String username = JOptionPane.showInputDialog(frame, "Enter your username:");
+        if (username == null || username.trim().isEmpty()) {
+            System.exit(0); // Exit if they cancel or enter nothing
+        }
+
         try {
             Socket socket = new Socket("localhost", 1234);
+
+            out = new PrintWriter(socket.getOutputStream(), true);
+            out.println(username); // Send username before anything else
 
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -47,7 +56,7 @@ public class ChatClientGUI {
                 try {
                     String msgFromServer;
                     while ((msgFromServer = in.readLine()) != null) {
-                        chatArea.append("Server: " + msgFromServer + "\n");
+                        chatArea.append(msgFromServer + "\n");
                     }
                 } catch (IOException e) {
                     chatArea.append("Connection closed.\n");
@@ -68,7 +77,7 @@ public class ChatClientGUI {
                 String message = inputField.getText().trim();
                 if (!message.isEmpty()) {
                     out.println(message);
-                    chatArea.append("You: " + message + "\n");
+                    chatArea.append(message + "\n");
                     inputField.setText("");
                 }
             }
