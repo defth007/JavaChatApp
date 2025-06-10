@@ -16,13 +16,26 @@ public class ChatClientGUI {
         // Create UI components
         JTextArea chatArea = new JTextArea();
         chatArea.setEditable(false);
-        chatArea.setFont(new Font("SansSerif", Font.PLAIN, 14));
         JScrollPane scrollPane = new JScrollPane(chatArea);
 
         JTextField inputField = new JTextField();
         JButton sendButton = new JButton("Send");
 
         sendButton.setPreferredSize(new Dimension(100, 40));
+
+        // Load and apply custom font
+        try {
+            InputStream fontStream = ChatClientGUI.class.getResourceAsStream("/MinecraftFont.otf");
+            Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(20f);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(customFont);
+
+            chatArea.setFont(customFont);
+            inputField.setFont(customFont);
+            sendButton.setFont(customFont);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Layout
         frame.setLayout(new BorderLayout());
@@ -49,7 +62,6 @@ public class ChatClientGUI {
             out.println(username); // Send username before anything else
 
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream(), true);
 
             // Thread to listen for messages from server
             Thread readThread = new Thread(() -> {
