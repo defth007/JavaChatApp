@@ -9,9 +9,16 @@ public class ChatClientGUI {
 
     public static void main(String[] args) {
         // Create the main window
+        ImageIcon bgIcon = new ImageIcon(ChatClientGUI.class.getResource("/MinecraftBackground.png"));
+        BackgroundPanel backgroundPanel = new BackgroundPanel(bgIcon.getImage());
+
         JFrame frame = new JFrame("Chat Client");
+        frame.setContentPane(backgroundPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 500);
+        ImageIcon icon = new ImageIcon(ChatClientGUI.class.getResource("/ChatApp.png"));
+        frame.setIconImage(icon.getImage());
+
 
         // Create UI components
         JTextArea chatArea = new JTextArea();
@@ -26,13 +33,35 @@ public class ChatClientGUI {
         // Load and apply custom font
         try {
             InputStream fontStream = ChatClientGUI.class.getResourceAsStream("/MinecraftFont.otf");
-            Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(20f);
+            Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontStream).deriveFont(25f);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(customFont);
 
-            chatArea.setFont(customFont);
-            inputField.setFont(customFont);
+            Font chatFont = customFont.deriveFont(30f);
+            chatArea.setFont(chatFont);
+            chatArea.setOpaque(false);
+            chatArea.setBackground(new Color(0, 0, 0, 0)); // Fully transparent
+            chatArea.setMargin(new Insets(10, 10, 10, 10)); // top, left, bottom, right
+
+            scrollPane.setOpaque(false);
+            scrollPane.getViewport().setOpaque(false);
+
             sendButton.setFont(customFont);
+            sendButton.setFocusPainted(false);
+            sendButton.setContentAreaFilled(false);
+            sendButton.setOpaque(true);
+            sendButton.setBackground(Color.GRAY);
+            sendButton.setForeground(Color.WHITE);
+            sendButton.setBorder(BorderFactory.createLineBorder(Color.PINK.brighter(), 5));
+
+            inputField.setFont(customFont);
+            inputField.setOpaque(true);
+            inputField.setBackground(Color.PINK.brighter());
+            inputField.setForeground(Color.BLACK); // Makes the text visible
+            inputField.setCaretColor(Color.BLACK); // Cursor visibility
+            inputField.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -44,6 +73,7 @@ public class ChatClientGUI {
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.add(inputField, BorderLayout.CENTER);
         bottomPanel.add(sendButton, BorderLayout.EAST);
+        bottomPanel.setOpaque(false);
 
         frame.add(bottomPanel, BorderLayout.SOUTH);
 
@@ -69,6 +99,7 @@ public class ChatClientGUI {
                     String msgFromServer;
                     while ((msgFromServer = in.readLine()) != null) {
                         chatArea.append(msgFromServer + "\n");
+                        chatArea.setCaretPosition(chatArea.getDocument().getLength());
                     }
                 } catch (IOException e) {
                     chatArea.append("Connection closed.\n");
@@ -77,7 +108,7 @@ public class ChatClientGUI {
             readThread.start();
 
         } catch (IOException e) {
-            chatArea.append("Failed to connect to server: " + e.getMessage() + "\n");
+            JOptionPane.showMessageDialog(frame, "Server is not running. Please try again later.");
             sendButton.setEnabled(false);
             inputField.setEnabled(false);
         }
@@ -90,6 +121,7 @@ public class ChatClientGUI {
                 if (!message.isEmpty()) {
                     out.println(message);
                     chatArea.append(message + "\n");
+                    chatArea.setCaretPosition(chatArea.getDocument().getLength());
                     inputField.setText("");
                 }
             }
@@ -97,5 +129,21 @@ public class ChatClientGUI {
 
         sendButton.addActionListener(sendAction);
         inputField.addActionListener(sendAction); // allows hitting Enter to send
+    }
+}
+
+class BackgroundPanel extends JPanel {
+    private final Image backgroundImage;
+
+    public BackgroundPanel(Image image) {
+        this.backgroundImage = image;
+        setLayout(new BorderLayout()); // So you can still add components
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        // Draw the image to fill the entire panel
+        g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
     }
 }
