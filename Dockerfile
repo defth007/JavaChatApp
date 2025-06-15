@@ -4,10 +4,10 @@ WORKDIR /app
 
 COPY . .
 
-# Compile the server Java file
-RUN javac Server.java
+# Compile all Java source files in src/
+RUN javac src/*.java
 
 EXPOSE 1234
 
-# Start the server when the container runs
-CMD ["java", "Server"]
+# Run the server class
+CMD ["java", "-cp", "src", "Server"]
