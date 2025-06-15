@@ -6,7 +6,8 @@ public class Server {
     private static final Set<ClientHandler> clientHandlers = new HashSet<>();
 
     public static void main(String[] args){
-        int port = 1234;
+        String portEnv = System.getenv("PORT");
+        int port = (portEnv != null) ? Integer.parseInt(portEnv) : 1234;
 
         try (ServerSocket serverSocket = new ServerSocket(port)){
             System.out.println("Server started on port " + port);
