@@ -85,8 +85,32 @@ public class ChatClientGUI {
             System.exit(0); // Exit if they cancel or enter nothing
         }
 
+        // Get connection details from user
+        String connection = JOptionPane.showInputDialog(frame, "Enter ngrok connection URL:");
+        if (connection == null || connection.trim().isEmpty()) {
+            System.exit(0); // Exit if they cancel or enter nothing
+        }
+
+        String host;
+        int port;
+
         try {
-            Socket socket = new Socket("localhost", 1234);
+            // Parse the connection URL (e.g., "tcp://8.tcp.ngrok.io:19100")
+            if (connection.startsWith("tcp://")) {
+                String[] parts = connection.replace("tcp://", "").split(":");
+                host = parts[0];
+                port = Integer.parseInt(parts[1]);
+            } else {
+                throw new IllegalArgumentException("URL must start with tcp://");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(frame, "Invalid URL format. Please use format: tcp://host:port");
+            System.exit(0);
+            return;
+        }
+
+        try {
+            Socket socket = new Socket(host, port);
 
             out = new PrintWriter(socket.getOutputStream(), true);
             out.println(username); // Send username before anything else

@@ -3,6 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/Chat_jar</output-path>
     <root id="archive" name="Chat.jar">
       <element id="module-output" name="Chat" />
+      <element id="dir-copy" path="$PROJECT_DIR$/out/production/Chat" />
     </root>
   </artifact>
 </component>
