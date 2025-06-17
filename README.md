@@ -3,27 +3,24 @@
 A simple real-time chat server written in Java using sockets and threads.
 
 ## Features
-- Multi-client chat support
-- Real-time message broadcasting
-- Clean code with basic error handling
-- Ready to expand (GUI, usernames, private chat, etc.)
+- Real time group chat using Java sockets
+- GUI built with Java Swing and custom fonts/backgrounds
+- 'Username: message' display
+- ngrok-compatible: connect across the internet
 
 ## How to Run
 
-### 1. Compile the code
+### 1. Start the server
+- Run Server.java in IntelliJ
+- To use ngrok, run this in your terminal:
+```bash
+ngrok tcp 1234
+```
+- Copy the tcp:// address it gives you
 
-```bash
-javac Server.java
-javac ChatClientGUI.java
-```
-### 2. Start the server
-```bash
-java Server
-```
+### 2. Start the client(s)
+- Run ChatClientGUI.java in IntelliJ or open the Minechat app
+- Enter your username and the ngrok URL when prompted
+- Start chatting!
 
-### 3. Start the client(s)
-```bash
-java ChatClientGUI
-```
-Each GUI window represents a different user connected to the same server.
 
