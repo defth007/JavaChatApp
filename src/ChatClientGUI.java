@@ -4,8 +4,9 @@ import java.awt.event.ActionEvent;
 import java.io.*;
 import java.net.*;
 
+// Chat client with Minecraft-inspired GUI
 public class ChatClientGUI {
-    private static PrintWriter out;
+    private static PrintWriter out; // Used to send messages to the server
 
     public static void main(String[] args) {
         // Create the main window
@@ -19,8 +20,6 @@ public class ChatClientGUI {
         ImageIcon icon = new ImageIcon(ChatClientGUI.class.getResource("/ChatApp.png"));
         frame.setIconImage(icon.getImage());
 
-
-        // Create UI components
         JTextArea chatArea = new JTextArea();
         chatArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(chatArea);
@@ -61,12 +60,11 @@ public class ChatClientGUI {
             inputField.setCaretColor(Color.BLACK); // Cursor visibility
             inputField.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        // Layout
+        // Layout for components
         frame.setLayout(new BorderLayout());
         frame.add(scrollPane, BorderLayout.CENTER);
 
@@ -74,12 +72,12 @@ public class ChatClientGUI {
         bottomPanel.add(inputField, BorderLayout.CENTER);
         bottomPanel.add(sendButton, BorderLayout.EAST);
         bottomPanel.setOpaque(false);
-
         frame.add(bottomPanel, BorderLayout.SOUTH);
 
         // Show window
         frame.setVisible(true);
 
+        // Prompt for username
         String username = JOptionPane.showInputDialog(frame, "Enter your username:");
         if (username == null || username.trim().isEmpty()) {
             System.exit(0); // Exit if they cancel or enter nothing
@@ -95,7 +93,7 @@ public class ChatClientGUI {
         int port;
 
         try {
-            // Parse the connection URL (e.g., "tcp://8.tcp.ngrok.io:19100")
+            // Parse ngrok TCP URL into host and port
             if (connection.startsWith("tcp://")) {
                 String[] parts = connection.replace("tcp://", "").split(":");
                 host = parts[0];
@@ -109,9 +107,11 @@ public class ChatClientGUI {
             return;
         }
 
+        // Try to connect to the server
         try {
             Socket socket = new Socket(host, port);
 
+            // Output stream to send messages
             out = new PrintWriter(socket.getOutputStream(), true);
             out.println(username); // Send username before anything else
 

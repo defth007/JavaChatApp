@@ -3,11 +3,11 @@ import java.net.*;
 import java.util.*;
 
 public class Server {
+    // Shared set of all connected clients
     private static final Set<ClientHandler> clientHandlers = new HashSet<>();
 
     public static void main(String[] args){
-        String portEnv = System.getenv("PORT");
-        int port = (portEnv != null) ? Integer.parseInt(portEnv) : 1234;
+        int port = 1234;
 
         try (ServerSocket serverSocket = new ServerSocket(port)){
             System.out.println("Server started on port " + port);
@@ -16,9 +16,10 @@ public class Server {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("New client connected");
 
+                // Create handler for new client
                 ClientHandler handler = new ClientHandler(clientSocket);
-                clientHandlers.add(handler);
-                new Thread(handler).start();
+                clientHandlers.add(handler); // Add to the set of active clients
+                new Thread(handler).start(); // Start the handler thread
             }
         }
         catch (IOException e){
@@ -26,7 +27,7 @@ public class Server {
         }
     }
 
-    // Broadcast message to all clients
+    // Broadcast message to all clients except the sender
     public static void broadcast(String message, ClientHandler sender) {
         for (ClientHandler handler : clientHandlers) {
             if (handler != sender) {
@@ -41,6 +42,7 @@ public class Server {
     }
 }
 
+// Handles communication with a single client
 class ClientHandler implements Runnable{
     private final Socket socket;
     private PrintWriter out;
@@ -53,6 +55,7 @@ class ClientHandler implements Runnable{
 
     public void run(){
         try {
+            // Set up input and output streams
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
 
@@ -62,6 +65,7 @@ class ClientHandler implements Runnable{
             Server.broadcast(username + " has joined the chat.", this);
 
             String message;
+            // Read messages from the client and broadcast to others
             while ((message = in.readLine()) != null){
                 System.out.println(username + ": " + message);
                 Server.broadcast(username + ": " + message, this);
@@ -77,6 +81,8 @@ class ClientHandler implements Runnable{
             Server.removeClient(this);
         }
     }
+
+    // Print this client's message to their screen
     public void sendMessage(String message){
         out.println(message);
     }
